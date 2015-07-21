@@ -6,7 +6,7 @@ package com.example.matchcontroller.services;
 public class WiFiService {
     private static LinkThread linkThread;
 
-    //启动连接设备的线程
+
     public static void link() throws Exception {
         linkThread = new LinkThread();
     }

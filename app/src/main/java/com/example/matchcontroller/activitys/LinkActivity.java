@@ -20,7 +20,7 @@ import com.example.matchcontroller.services.BluetoothService;
 
 
 public class LinkActivity extends ActionBarActivity {
-
+    ProgressDialog m_pDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,17 +32,17 @@ public class LinkActivity extends ActionBarActivity {
         blueToothButton.setOnClickListener(new BlueToothButtonListener());
         wifiButton.setOnClickListener(new WiFiButtonListener());
 
+        prepareDialog();
     }
 
-    void waitForLink() throws Exception {
-        ProgressDialog m_pDialog;
+    void prepareDialog() {
         m_pDialog = new ProgressDialog(this);
         m_pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        m_pDialog.setMessage(getString(R.string.wait_bluetooth_msg));
+        m_pDialog.setMessage("等待连接。。。");
         m_pDialog.setIndeterminate(false);
         m_pDialog.setCancelable(false);
-        m_pDialog.show();
     }
+
 
     class BlueToothButtonListener implements View.OnClickListener {
 
@@ -54,7 +54,7 @@ public class LinkActivity extends ActionBarActivity {
             } else {
                 final String[] items = BluetoothService.getDevicesName();
                 AlertDialog.Builder builder = new AlertDialog.Builder(LinkActivity.this);
-                builder.setTitle(getString(R.string.choose_bluetooth_msg));
+                builder.setTitle("配对蓝牙");
                 builder.setItems(items, new DialogInterface.OnClickListener() {
 
                     @Override
@@ -64,7 +64,7 @@ public class LinkActivity extends ActionBarActivity {
                         }
                         try {
                             BluetoothService.link(new waitingHandler());
-                            waitForLink();
+                            m_pDialog.show();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -75,23 +75,30 @@ public class LinkActivity extends ActionBarActivity {
         }
     }
 
+    void showMessage(String msg) {
+        new  AlertDialog.Builder(this)
+                .setTitle("连接" )
+                .setMessage(msg )
+                .setPositiveButton("确定" ,  null )
+                .show();
+    }
+
     class waitingHandler extends Handler {
         public void handleMessage(Message msg)
         {
-
+            m_pDialog.dismiss();
+            switch (msg.what) {
+                case 0:showMessage("连接失败");
+                    break;
+                case 1:showMessage("连接成功");
+                    break;
+            }
         }
-
     }
 
     class WiFiButtonListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (!mWifi.isConnected()) {
-                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS );
-                startActivity(intent);
-            }
         }
     }
 

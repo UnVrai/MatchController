@@ -28,7 +28,7 @@ public class BluetoothService {
     static Map<String, BluetoothDevice> deviceMap = new HashMap<>();
     static BluetoothDevice device = null;
     static LinkThread linkThread;
-    //获取以配对的蓝牙设备
+
     public static String[] getDevicesName() {
         Set<BluetoothDevice> device= adapter.getBondedDevices();
         if(device.size()>0) {
@@ -43,29 +43,37 @@ public class BluetoothService {
         }
         return null;
     }
-    //设置用户选择的蓝牙设备为连接设备
+
     public static void setBluetoothDevice(String deviceName) {
         BluetoothService.device = deviceMap.get(deviceName);
     }
-    //启动连接设备的线程
+
     public static void link(Handler waitingHandler) throws Exception {
         linkThread = new LinkThread(waitingHandler);
     }
-    //蓝牙连接线程类
+
     private static class LinkThread extends Thread {
         private Handler mHandler;
         private Looper mLooper;
         private BluetoothSocket socket = null;
         private Handler waitingHandler;
-        //构造时启动线程
+
         LinkThread(Handler waitingHandler) {
             this.waitingHandler = waitingHandler;
             start();
         }
 
         public void run() {
+            LinkService.setDevice(device.getName(), LinkService.BLUETOOTH);
             try {
-                LinkService.setDevice(device.getName(), LinkService.BLUETOOTH);
+                socket = device. createRfcommSocketToServiceRecord(UUID.fromString("1EAABAE7-C81F-AABC-4243-40300D49BD06"));
+                socket.connect();
+            } catch (Exception e) {
+                waitingHandler.sendEmptyMessage(0);
+                e.printStackTrace();
+            }
+            if (socket.isConnected()) {
+                waitingHandler.sendEmptyMessage(1);
                 Looper.prepare();
                 mLooper = Looper.myLooper();
                 mHandler = new Handler(mLooper, new Handler.Callback() {
@@ -79,15 +87,11 @@ public class BluetoothService {
                     }
                 });
                 Looper.loop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (socket != null) {
                 try {
                     socket.close();
                     LinkService.setDevice(null, LinkService.NO_DEVICE);
                 } catch (Exception e) {
-                    // TODO: handle exception
+                    e.printStackTrace();
                 }
             }
         }

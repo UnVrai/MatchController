@@ -12,13 +12,13 @@ public class LinkService {
     private static byte deviceType = NO_DEVICE;
     private static String deviceName = null;
 
-    //设置当前连接设备
+
     public static void setDevice(String deviceName, byte deviceType) {
         LinkService.deviceName = deviceName;
         LinkService.deviceType = deviceType;
     }
 
-    //使用设备判断
+
     public static boolean sendData() {
         if (deviceType == BLUETOOTH) {
             BluetoothService.sendData();
