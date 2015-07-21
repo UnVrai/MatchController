@@ -48,16 +48,18 @@ public class BluetoothService {
         BluetoothService.device = deviceMap.get(deviceName);
     }
     //启动连接设备的线程
-    public static void link() throws Exception {
-        linkThread = new LinkThread();
+    public static void link(Handler waitingHandler) throws Exception {
+        linkThread = new LinkThread(waitingHandler);
     }
     //蓝牙连接线程类
     private static class LinkThread extends Thread {
         private Handler mHandler;
         private Looper mLooper;
         private BluetoothSocket socket = null;
+        private Handler waitingHandler;
         //构造时启动线程
-        LinkThread() {
+        LinkThread(Handler waitingHandler) {
+            this.waitingHandler = waitingHandler;
             start();
         }
 

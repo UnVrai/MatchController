@@ -5,7 +5,7 @@
     <string name="title_activity_link">连接设置</string>
     <string name="title_activity_record">历史记录</string>
 
-    <string name="choose_bluetooth_msg">选择蓝牙</string>
+    <string name="choose_bluetooth_msg">配对蓝牙</string>
     <string name="wait_bluetooth_msg">等待连接。。。</string>
 
     <string name="hello_world">Hello world!</string>
