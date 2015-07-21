@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
@@ -17,6 +19,7 @@ import android.widget.Button;
 
 import com.example.matchcontroller.R;
 import com.example.matchcontroller.services.BluetoothService;
+import com.example.matchcontroller.services.WiFiService;
 
 
 public class LinkActivity extends ActionBarActivity {
@@ -99,7 +102,55 @@ public class LinkActivity extends ActionBarActivity {
     class WiFiButtonListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+            WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            int ipAddress = wifiInfo.getIpAddress();
+            String ip = intToIp(ipAddress);
+            WiFiService.startSearch(ip);
+            final Handler handler = new Handler() {
+                public void handleMessage(Message msg)
+                {
+                    m_pDialog.dismiss();
+                    WiFiService.finishSearch();
+                }
+            };
+            new Thread() {
+                public void run() {
+                    try {
+                        sleep(3000);
+                        handler.sendEmptyMessage(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
         }
+    }
+
+    public void showWiFiResult() {
+        final String[] items = WiFiService.getDevicesName();
+        AlertDialog.Builder builder = new AlertDialog.Builder(LinkActivity.this);
+        builder.setTitle("选择设备");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                if (items != null) {
+                    WiFiService.setWiFiDevice(items[arg1]);
+                }
+                try {
+                    WiFiService.link(new waitingHandler());
+                    m_pDialog.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    private String intToIp(int i) {
+        return (i & 0xFF ) + "." + ((i >> 8 ) & 0xFF) + "." + ((i >> 16 ) & 0xFF) + "." + ( i >> 24 & 0xFF) ;
     }
 
 }

@@ -25,7 +25,7 @@ public class LinkService {
             return true;
         }
         if (deviceType == WIFI) {
-
+            WiFiService.sendData();
         }
         return false;
     }

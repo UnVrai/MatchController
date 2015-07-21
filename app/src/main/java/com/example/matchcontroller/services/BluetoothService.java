@@ -28,7 +28,7 @@ public class BluetoothService {
     static Map<String, BluetoothDevice> deviceMap = new HashMap<>();
     static BluetoothDevice device = null;
     static LinkThread linkThread;
-
+    //获取已配对的设备
     public static String[] getDevicesName() {
         Set<BluetoothDevice> device= adapter.getBondedDevices();
         if(device.size()>0) {
@@ -44,14 +44,15 @@ public class BluetoothService {
         return null;
     }
 
+    //设置蓝牙设备
     public static void setBluetoothDevice(String deviceName) {
         BluetoothService.device = deviceMap.get(deviceName);
     }
-
+    //启动线程连接
     public static void link(Handler waitingHandler) throws Exception {
         linkThread = new LinkThread(waitingHandler);
     }
-
+    //蓝牙连接线程
     private static class LinkThread extends Thread {
         private Handler mHandler;
         private Looper mLooper;
@@ -64,7 +65,6 @@ public class BluetoothService {
         }
 
         public void run() {
-            LinkService.setDevice(device.getName(), LinkService.BLUETOOTH);
             try {
                 socket = device. createRfcommSocketToServiceRecord(UUID.fromString("1EAABAE7-C81F-AABC-4243-40300D49BD06"));
                 socket.connect();
@@ -73,6 +73,7 @@ public class BluetoothService {
                 e.printStackTrace();
             }
             if (socket.isConnected()) {
+                LinkService.setDevice(device.getName(), LinkService.BLUETOOTH);
                 waitingHandler.sendEmptyMessage(1);
                 Looper.prepare();
                 mLooper = Looper.myLooper();
