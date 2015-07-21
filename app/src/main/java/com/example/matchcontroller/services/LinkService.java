@@ -32,7 +32,8 @@ public class LinkService {
 
     public static void sendData(DataOutputStream output) throws Exception{
         String data = DataService.getScoreData();
-        output.writeUTF(data);
+        output.writeBytes(data);
+        output.flush();
         output.close();
     }
 
