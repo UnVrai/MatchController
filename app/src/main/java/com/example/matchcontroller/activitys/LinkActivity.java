@@ -55,27 +55,31 @@ public class LinkActivity extends ActionBarActivity {
                 Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivity(intent);
             } else {
-                final String[] items = BluetoothService.getDevicesName();
-                AlertDialog.Builder builder = new AlertDialog.Builder(LinkActivity.this);
-                builder.setTitle("配对蓝牙");
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        if (items != null) {
-                            BluetoothService.setBluetoothDevice(items[arg1]);
-                        }
-                        try {
-                            BluetoothService.link(new waitingHandler());
-                            m_pDialog.show();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                builder.create().show();
+                showBlueToothDevice();
             }
         }
+    }
+
+    void showBlueToothDevice() {
+        final String[] items = BluetoothService.getDevicesName();
+        AlertDialog.Builder builder = new AlertDialog.Builder(LinkActivity.this);
+        builder.setTitle("配对蓝牙");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                if (items != null) {
+                    BluetoothService.setBluetoothDevice(items[arg1]);
+                }
+                try {
+                    BluetoothService.link(new waitingHandler());
+                    m_pDialog.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        builder.create().show();
     }
 
     void showMessage(String msg) {
@@ -107,46 +111,62 @@ public class LinkActivity extends ActionBarActivity {
             int ipAddress = wifiInfo.getIpAddress();
             String ip = intToIp(ipAddress);
             WiFiService.startSearch(ip);
-            final Handler handler = new Handler() {
-                public void handleMessage(Message msg)
-                {
-                    m_pDialog.dismiss();
-                    WiFiService.finishSearch();
-                }
-            };
-            new Thread() {
-                public void run() {
-                    try {
-                        sleep(3000);
-                        handler.sendEmptyMessage(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
+            waitingForSearch();
         }
+    }
+
+    public void waitingForSearch() {
+        final ProgressDialog waitDialog = new ProgressDialog(this);
+        waitDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        waitDialog.setMessage("正在搜寻设备。。。");
+        waitDialog.setIndeterminate(false);
+        waitDialog.setCancelable(false);
+        waitDialog.show();
+
+        final Handler handler = new Handler() {
+            public void handleMessage(Message msg)
+            {
+                waitDialog.dismiss();
+                WiFiService.finishSearch();
+                showWiFiResult();
+            }
+        };
+        new Thread() {
+            public void run() {
+                try {
+                    sleep(3000);
+                    handler.sendEmptyMessage(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     public void showWiFiResult() {
         final String[] items = WiFiService.getDevicesName();
-        AlertDialog.Builder builder = new AlertDialog.Builder(LinkActivity.this);
-        builder.setTitle("选择设备");
-        builder.setItems(items, new DialogInterface.OnClickListener() {
+        if (items.length != 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(LinkActivity.this);
+            builder.setTitle("选择设备");
+            builder.setItems(items, new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                if (items != null) {
-                    WiFiService.setWiFiDevice(items[arg1]);
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    if (items != null) {
+                        WiFiService.setWiFiDevice(items[arg1]);
+                    }
+                    try {
+                        WiFiService.link(new waitingHandler());
+                        m_pDialog.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                try {
-                    WiFiService.link(new waitingHandler());
-                    m_pDialog.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        builder.create().show();
+            });
+            builder.create().show();
+        } else {
+            showMessage("未搜寻到设备");
+        }
     }
 
     private String intToIp(int i) {
