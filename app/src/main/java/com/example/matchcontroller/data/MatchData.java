@@ -30,6 +30,18 @@ public class MatchData {
         return name2;
     }
 
+    public int getSet() {
+        return set;
+    }
+
+    public int getSet1() {
+        return set1;
+    }
+
+    public int getSet2() {
+        return set2;
+    }
+
     public String getDate() {
         return date;
     }

@@ -8,7 +8,7 @@ import android.view.View.*;
 import android.widget.Button;
 
 import com.example.matchcontroller.R;
-
+import com.example.matchcontroller.services.SQLiteService;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -22,6 +22,9 @@ public class MainActivity extends ActionBarActivity {
         Button recordButton = (Button)findViewById(R.id.record);
         Button linkButton = (Button)findViewById(R.id.link);
         Button exitButton = (Button)findViewById(R.id.exit);
+
+        if (SQLiteService.hasData(this)) {
+        }
 
         continueButton.setOnClickListener(new OnClickListener() {
             @Override

@@ -63,11 +63,11 @@ public class RecordActivity extends ActionBarActivity {
         for(int i =0; i < lengh; i++) {
             Map<String,String> item = new HashMap<>();
             item.put("title", matchDatas[i].getName1() + " VS " + matchDatas[i].getName2());
-            item.put("data", matchDatas[i].getDate());
+            item.put("date", matchDatas[i].getDate());
             mData.add(item);
         }
         SimpleAdapter adapter = new SimpleAdapter(this,mData,android.R.layout.simple_list_item_2,
-                new String[]{"title","text"},new int[]{android.R.id.text1,android.R.id.text2});
+                new String[]{"title","date"},new int[]{android.R.id.text1,android.R.id.text2});
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

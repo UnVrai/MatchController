@@ -20,7 +20,7 @@ import java.util.List;
  * Created by BAKA on 2015/7/21.
  */
 public class HTTPService {
-    private static String urlString = "http://dwh123.wicp.net:8080/database/index.jsp?id=";
+    private static String urlString = "http://1.dwh123.sinaapp.com/index.jsp?id=";
     private static MatchData[] matchDatas;
     private static Handler handler;
 
