@@ -12,6 +12,7 @@ public class MatchData {
     int set1;
     int set2;
     ScoreData[] scores;
+    String date;
 
     public MatchData(String name1, String name2) {
         this.name1 = name1;
@@ -19,6 +20,18 @@ public class MatchData {
         set = 0;
         scores = new ScoreData[3];
         scores[0] = new ScoreData();
+    }
+
+    public String getName1() {
+        return name1;
+    }
+
+    public String getName2() {
+        return name2;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     public JSONObject getScoreJSON() throws Exception {
@@ -32,6 +45,40 @@ public class MatchData {
         return  jsonObject;
     }
 
+    public JSONObject getMatchJSON() throws Exception {
+        JSONObject jo = new JSONObject();
+        jo.put("nameone", name1);
+        jo.put("nametwo", name2);
+        jo.put("setone", set1);
+        jo.put("settwo", set2);
+        jo.put("scoreone_1", scores[0].score1);
+        jo.put("scoreone_2", scores[0].score2);
+        jo.put("scoretwo_1", scores[1].score1);
+        jo.put("scoretwo_2", scores[1].score2);
+        jo.put("scoretri_1", scores[2].score1);
+        jo.put("scoretri_2", scores[2].score2);
+        jo.put("date", date);
+        return jo;
+    }
+
+    public void setSetScores(int set1,int set2) {
+        this.set1 = set1;
+        this.set2 = set2;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void addScoreData() {
+        set++;
+        scores[set] = new ScoreData();
+    }
+
+    public void setScore(int score1, int score2) {
+        scores[set].score1 = score1;
+        scores[set].score2 = score2;
+    }
 
     boolean incScore1() {
         return scores[set].incScore1();
