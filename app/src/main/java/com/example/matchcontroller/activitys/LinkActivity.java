@@ -134,7 +134,7 @@ public class LinkActivity extends ActionBarActivity {
         new Thread() {
             public void run() {
                 try {
-                    sleep(3000);
+                    sleep(30000);
                     handler.sendEmptyMessage(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.example.matchcontroller.services;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 /**
@@ -32,9 +33,7 @@ public class LinkService {
 
     public static void sendData(DataOutputStream output) throws Exception{
         String data = DataService.getScoreData();
-        output.writeBytes(data);
-        output.flush();
-        output.close();
+        output.writeUTF(data);
     }
 
     public static String getDeviceName() {

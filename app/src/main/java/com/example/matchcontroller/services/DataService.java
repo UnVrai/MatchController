@@ -19,10 +19,23 @@ public class DataService {
         ContentValues cv = new ContentValues();
         cv.put("name1", matchData.getName1());
         cv.put("name2", matchData.getName2());
-        cv.put("set", matchData.getSet());
+        cv.put("sets", matchData.getSet());
         cv.put("set1", matchData.getSet1());
         cv.put("set2", matchData.getSet2());
         SQLiteService.createNewMatch(activity, cv);
+    }
+
+    public static void incScore1() {
+        matchData.incScore1();
+    }
+    public static void incScore2() {
+        matchData.incScore2();
+    }
+    public static void decScore1() {
+        matchData.decScore1();
+    }
+    public static void decScore2() {
+        matchData.decScore2();
     }
 
     public static String getScoreData() throws Exception{

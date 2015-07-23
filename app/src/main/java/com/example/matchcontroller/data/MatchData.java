@@ -92,20 +92,27 @@ public class MatchData {
         scores[set].score2 = score2;
     }
 
-    boolean incScore1() {
+    public int getScore1(int set) {
+        return scores[set].score1;
+    }
+    public int getScore2(int set) {
+        return scores[set].score2;
+    }
+
+    public boolean incScore1() {
         return scores[set].incScore1();
     }
 
-    boolean incScore2() {
+    public boolean incScore2() {
         return scores[set].incScore2();
     }
 
-    boolean decScore1() {
+    public boolean decScore1() {
         return scores[set].decScore1();
     }
 
-    boolean decScore2() {
-        return scores[set].incScore2();
+    public boolean decScore2() {
+        return scores[set].decScore2();
     }
 
 

@@ -31,7 +31,7 @@ public class SQLiteService {
 
     public static void createNewMatch(Activity activity, ContentValues cv) {
         db = activity.openOrCreateDatabase("test.db", Context.MODE_PRIVATE, null);
-        db.execSQL("CREATE TABLE match (id INTEGER PRIMARY KEY AUTOINCREMENT, name1 VARCHAR, name2, VARCHAR,set INT, set1 INT, set2 INT)");
+        db.execSQL("CREATE TABLE match (id INTEGER PRIMARY KEY AUTOINCREMENT, name1 VARCHAR, name2 VARCHAR, sets INT, set1 INT, set2 INT)");
         db.insert("match", null, cv);
         db.close();
     }
@@ -41,10 +41,10 @@ public class SQLiteService {
         db.update("match", cv, "id=?", new String[]{"1"});
         db.close();
     }
-
-
-
-
-
+    public static void deleteMatchData(Activity activity) {
+        db = activity.openOrCreateDatabase("test.db", Context.MODE_PRIVATE, null);
+        db.execSQL("DROP TABLE match");
+        db.close();
+    }
 
 }

@@ -9,6 +9,7 @@ import android.os.Message;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,25 +76,33 @@ public class BluetoothService {
             if (socket.isConnected()) {
                 LinkService.setDevice(device.getName(), LinkService.BLUETOOTH);
                 waitingHandler.sendEmptyMessage(1);
+                OutputStream os = null;
+                try {
+                    os = socket.getOutputStream();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                final DataOutputStream dos = new DataOutputStream(os);
                 Looper.prepare();
                 mLooper = Looper.myLooper();
                 mHandler = new Handler(mLooper, new Handler.Callback() {
                     public boolean handleMessage(Message msg) {
                         try {
-                            LinkService.sendData(new DataOutputStream(socket.getOutputStream()));
+                            LinkService.sendData(dos);
                         } catch (Exception e) {
                             e.printStackTrace();
+                            try {
+                                dos.close();
+                                socket.close();
+                                LinkService.setDevice(null, LinkService.NO_DEVICE);
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
                         }
                         return true;
                     }
                 });
                 Looper.loop();
-                try {
-                    socket.close();
-                    LinkService.setDevice(null, LinkService.NO_DEVICE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         }
 

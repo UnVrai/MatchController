@@ -7,7 +7,6 @@ import android.os.Message;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -30,7 +29,7 @@ public class WiFiService {
     public static String[] getDevicesName() {
         List<String> devicesName = new ArrayList<>();
         for(Map.Entry<String, String> entry:deviceMap.entrySet()){
-            devicesName.add(entry.getValue());
+            devicesName.add(entry.getKey());
         }
         return devicesName.toArray(new String[0]);
     }
@@ -44,7 +43,7 @@ public class WiFiService {
         searchThread = new SearchThread();
     }
     public static void finishSearch() {
-        searchThread.interrupt();
+            searchThread.interrupt();
     }
 
     //发送广播
@@ -52,13 +51,13 @@ public class WiFiService {
         new Thread() {
             public void run() {
                 try {
-                    MulticastSocket ms = new MulticastSocket();
+                    DatagramSocket ds = new DatagramSocket(9998);
                     byte[] data = hostIp.getBytes();
-                    InetAddress address = InetAddress.getByName("224.0.0.1");
-                    DatagramPacket dataPacket = new DatagramPacket(data, data.length, address, 8003);
-                    ms.send(dataPacket);
-                    ms.close();
-                } catch (IOException e) {
+                    InetAddress address = InetAddress.getByName("255.255.255.255");
+                    DatagramPacket dataPacket = new DatagramPacket(data, data.length, address, 9998);
+                    ds.send(dataPacket);
+                    ds.close();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -73,12 +72,12 @@ public class WiFiService {
         public void run() {
             DatagramSocket ds = null;
             try {
-                ds = new DatagramSocket(10000);
+                ds = new DatagramSocket(5544);
                 while (true) {
                     byte[] buf = new byte[1024];
                     DatagramPacket dp = new DatagramPacket(buf,0,buf.length);
                     ds.receive(dp);
-                    JSONObject jo = new JSONObject(buf.toString());
+                    JSONObject jo = new JSONObject(new String(buf,0,dp.getLength()));
                     deviceMap.put(jo.getString("name"),jo.getString("ip"));
                 }
 
